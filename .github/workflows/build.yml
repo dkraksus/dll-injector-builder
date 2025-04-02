@@ -1,4 +1,4 @@
-name: Build DLL Injector (Auto Commit)
+name: Manual MinGW Build (No setup-mingw)
 
 on:
   push:
@@ -11,22 +11,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x86
+      - name: Install MinGW via Chocolatey
+        run: |
+          choco install mingw -y
+          echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:GITHUB_PATH
 
-      - name: Build injector.exe
+      - name: Compile with g++
         run: |
           g++ -static -o injector.exe dll_inject_launcher.cpp
 
-      - name: Commit built .exe back to repo
+      - name: Commit built exe back to repo
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add injector.exe
-          git commit -m "Auto-commit built injector.exe" || echo "No changes"
+          git commit -m "Auto-build and push injector.exe" || echo "No changes to commit"
           git push
