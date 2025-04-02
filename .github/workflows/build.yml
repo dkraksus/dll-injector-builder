@@ -1,0 +1,30 @@
+name: Build DLL Injector (Windows x86)
+
+on:
+  push:
+    paths:
+      - '**.cpp'
+      - '**.bat'
+      - '.github/workflows/**'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up MinGW (32-bit)
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x86
+
+      - name: Build injector.exe
+        run: |
+          g++ -static -o injector.exe dll_inject_launcher.cpp
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: injector-exe
+          path: injector.exe
